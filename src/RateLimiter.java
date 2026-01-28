@@ -15,7 +15,7 @@ class APIRateLimiter implements RateLimiter {
     class Bucket{
         final double tokens;
         final long refillTime;
-        Bucket(int tokens, long refillTime) {
+        Bucket(double tokens, long refillTime) {
             this.tokens = tokens;
             this.refillTime = refillTime;
         }
@@ -39,7 +39,7 @@ class APIRateLimiter implements RateLimiter {
             Bucket currentBucket = bucket.get();
             long time = timeProvider.getNanoTime();
             double timePassed = (time - currentBucket.refillTime) / 1e9;
-            int currentPresentTokens = Math.min(capacity,(int) (currentBucket.tokens + (timePassed * tokensPerSecond)));
+            double currentPresentTokens = Math.min(capacity, (currentBucket.tokens + (timePassed * tokensPerSecond)));
             if (currentPresentTokens > 0){
                 Bucket newBucket = new Bucket(currentPresentTokens-1, time);
                 if(bucket.compareAndSet(currentBucket, newBucket)){
